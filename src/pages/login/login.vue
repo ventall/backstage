@@ -19,21 +19,23 @@
     <div class="loginForm">
       <h3>Background management system</h3>
       <el-form :model="loginForm"
-               ref="loginFrom"
+               ref="loginForm"
                :rules="loginRule"
                label-position="left">
         <el-form-item prop="username">
           <el-input placeholder="请输入管理员账号"
+                    prefix-icon="el-icon-user"
                     v-model="loginForm.username"></el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input placeholder="请输入管理员密码"
+                    prefix-icon="el-icon-lock"
+                    show-password
                     v-model="loginForm.password"></el-input>
         </el-form-item>
       </el-form>
       <el-button class="loginBtn"
-                 @click="login">登录</el-button>
-
+                 @click="loginBtn">登录</el-button>
     </div>
 
   </div>
@@ -41,7 +43,7 @@
 </template>
 
 <script>
-import instance from "@/api/common"
+import { mapActions } from 'vuex'
 export default {
   name: 'login',
   components: {
@@ -73,11 +75,27 @@ export default {
 
   },
   methods: {
-    async login () {
-      await instance.get('/login', (res, err) => {
-        console.log(res, err);
-      })
-    }
+    loginBtn () {
+      this.$refs['loginForm'].validate(async (valid) => {
+        if (valid) {
+          try {
+            let result = await this.login(this.loginForm)
+            if (!result) {
+              this.loginForm.password = ''
+            }
+          } catch (error) {
+            console.log(error);
+          }
+
+        } else {
+          return false;
+        }
+      });
+    },
+    resetForm () {
+      this.$refs['loginForm'].resetFields();
+    },
+    ...mapActions(['login'])
   },
 }
 </script>
@@ -119,6 +137,9 @@ export default {
       border-radius 10px
       .el-form-item
         padding-top 20px
+        .el-input
+          .el-input__icon
+            color #262626
       .el-form-item:last-child
         border-top 1px solid #4575e7
       .el-input__inner

@@ -31,6 +31,15 @@ module.exports = {
     // .set("base", resolve("baseConfig"))
     // .set("public", resolve("public"));
   },
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3300',
+        changeOrigin: true,//允许跨域
+        pathRewrite: { '^/api': '' },
+      },
+    },
+  }
   // configureWebpack: config => {
   //   if (process.env.NODE_ENV === 'production') {
   //     return {
